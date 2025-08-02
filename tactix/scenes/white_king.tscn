@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://wydgbdgw11iq"]
+
+[ext_resource type="PackedScene" uid="uid://6hlgpambyp6g" path="res://assets/king_w.glb" id="1_3lo5n"]
+
+[node name="White King" type="Node3D"]
+
+[node name="king_w" parent="." instance=ExtResource("1_3lo5n")]

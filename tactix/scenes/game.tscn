@@ -1,0 +1,75 @@
+[gd_scene load_steps=6 format=3 uid="uid://ckhyo75q7x3ar"]
+
+[ext_resource type="PackedScene" uid="uid://dw3m1v8axk4lo" path="res://assets/board.glb" id="1_uwrxv"]
+[ext_resource type="PackedScene" uid="uid://cr0qx4t7aqwhy" path="res://scenes/white_dice.tscn" id="2_yqjtg"]
+[ext_resource type="PackedScene" uid="uid://wydgbdgw11iq" path="res://scenes/white_king.tscn" id="3_lnu2h"]
+[ext_resource type="PackedScene" uid="uid://dr6ephfjv1xvi" path="res://scenes/black_dice.tscn" id="4_lbhrr"]
+[ext_resource type="PackedScene" uid="uid://d26jdyhcvd28v" path="res://scenes/black_king.tscn" id="5_iywne"]
+
+[node name="Game" type="Node3D"]
+
+[node name="board" parent="." instance=ExtResource("1_uwrxv")]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-0.943107, 0.199736, -0.265811, -5.25172e-08, 0.799454, 0.600727, 0.33249, 0.56655, -0.75397, -4.87952, 10.25, -14.4849)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 17, 0)
+
+[node name="White" type="Node3D" parent="."]
+
+[node name="White Dice1" parent="White" instance=ExtResource("2_yqjtg")]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, -8, 1, 8)
+
+[node name="White Dice2" parent="White" instance=ExtResource("2_yqjtg")]
+transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, -6, 1, 8)
+
+[node name="White Dice3" parent="White" instance=ExtResource("2_yqjtg")]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -4, 1, 8)
+
+[node name="White Dice4" parent="White" instance=ExtResource("2_yqjtg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1, 8)
+
+[node name="White King" parent="White" instance=ExtResource("3_lnu2h")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 8)
+
+[node name="White Dice5" parent="White" instance=ExtResource("2_yqjtg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1, 8)
+
+[node name="White Dice6" parent="White" instance=ExtResource("2_yqjtg")]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 4, 1, 8)
+
+[node name="White Dice7" parent="White" instance=ExtResource("2_yqjtg")]
+transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 6, 1, 8)
+
+[node name="White Dice8" parent="White" instance=ExtResource("2_yqjtg")]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 8, 1, 8)
+
+[node name="Black" type="Node3D" parent="."]
+
+[node name="Black Dice1" parent="Black" instance=ExtResource("4_lbhrr")]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 8, 1, -8)
+
+[node name="Black Dice2" parent="Black" instance=ExtResource("4_lbhrr")]
+transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 6, 1, -8)
+
+[node name="Black Dice3" parent="Black" instance=ExtResource("4_lbhrr")]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 4, 1, -8)
+
+[node name="Black Dice4" parent="Black" instance=ExtResource("4_lbhrr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1, -8)
+
+[node name="Black King" parent="Black" instance=ExtResource("5_iywne")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -8)
+
+[node name="Black Dice5" parent="Black" instance=ExtResource("4_lbhrr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1, -8)
+
+[node name="Black Dice6" parent="Black" instance=ExtResource("4_lbhrr")]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, -4, 1, -8)
+
+[node name="Black Dice7" parent="Black" instance=ExtResource("4_lbhrr")]
+transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, -6, 1, -8)
+
+[node name="Black Dice8" parent="Black" instance=ExtResource("4_lbhrr")]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -8, 1, -8)

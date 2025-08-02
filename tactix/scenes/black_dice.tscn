@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://dr6ephfjv1xvi"]
+
+[ext_resource type="PackedScene" uid="uid://i6dq8ngwiltn" path="res://assets/dice_b.glb" id="1_c0oo7"]
+
+[node name="Black Dice" type="Node3D"]
+
+[node name="dice_b" parent="." instance=ExtResource("1_c0oo7")]

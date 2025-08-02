@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://d26jdyhcvd28v"]
+
+[ext_resource type="PackedScene" uid="uid://dwbqvfs1grksd" path="res://assets/king_b.glb" id="1_vshst"]
+
+[node name="Black King" type="Node3D"]
+
+[node name="king_b" parent="." instance=ExtResource("1_vshst")]
