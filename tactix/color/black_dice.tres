@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://lcuf1e17t4iq"]
+
+[resource]
+resource_name = "Die black"
+transparency = 1
+albedo_color = Color(0, 0, 0, 1)
+roughness = 0.306452

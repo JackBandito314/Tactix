@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://dr6ephfjv1xvi"]
+[gd_scene load_steps=5 format=3 uid="uid://dr6ephfjv1xvi"]
 
 [ext_resource type="PackedScene" uid="uid://i6dq8ngwiltn" path="res://assets/dice_b.glb" id="1_c0oo7"]
 [ext_resource type="Script" uid="uid://ckn8ur0keedia" path="res://scripts/dice.gd" id="1_ej0vu"]
+[ext_resource type="Material" uid="uid://lcuf1e17t4iq" path="res://color/black_dice.tres" id="3_6rv1k"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_c0oo7"]
 
@@ -10,8 +11,11 @@ script = ExtResource("1_ej0vu")
 
 [node name="dice_b" parent="." instance=ExtResource("1_c0oo7")]
 
+[node name="6r" parent="dice_b" index="0"]
+surface_material_override/0 = ExtResource("3_6rv1k")
+
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 shape = SubResource("BoxShape3D_c0oo7")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+[editable path="dice_b"]

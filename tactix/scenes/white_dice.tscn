@@ -1,7 +1,13 @@
-[gd_scene load_steps=4 format=3 uid="uid://cr0qx4t7aqwhy"]
+[gd_scene load_steps=5 format=3 uid="uid://cr0qx4t7aqwhy"]
 
 [ext_resource type="PackedScene" uid="uid://vagvxjo4t3vm" path="res://assets/dice_w.glb" id="1_1vq7m"]
 [ext_resource type="Script" uid="uid://ckn8ur0keedia" path="res://scripts/dice.gd" id="2_hx6fm"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hx6fm"]
+resource_name = "Dice white"
+transparency = 1
+albedo_color = Color(0.60811, 0.453149, 0.175344, 1)
+roughness = 0.975806
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1vq7m"]
 
@@ -10,6 +16,11 @@ script = ExtResource("2_hx6fm")
 
 [node name="dice_w" parent="." instance=ExtResource("1_1vq7m")]
 
+[node name="6r_001" parent="dice_w" index="0"]
+surface_material_override/0 = SubResource("StandardMaterial3D_hx6fm")
+
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 shape = SubResource("BoxShape3D_1vq7m")
+
+[editable path="dice_w"]
