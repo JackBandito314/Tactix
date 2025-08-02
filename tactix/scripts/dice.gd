@@ -69,28 +69,29 @@ func _animate_transparency(target_alpha: float):
 
 
 func move_to_position(target_pos: Vector3):
-	# Distanz in Weltkoordinaten
 	var distance = global_position.distance_to(target_pos)
 	if distance < 0.01:
-		return # Kein Bewegen nötig
+		return
 
-	# Geschwindigkeit in Einheiten/Sekunde
 	var speed = 3.0
 	var move_time = distance / speed
 
-	# Bewegungsrichtung bestimmen
 	var dir = (target_pos - global_position).normalized()
 
-	# Achse bestimmen:
+	# Achse bestimmen (deine aktuelle Logik hier)
 	var rotations = Vector3.ZERO
 	if abs(dir.x) > abs(dir.z):
-		# Bewegung in X-Richtung → Rolle um Z
-		var direction_sign = sign(dir.x)
+		var direction_sign = -sign(dir.x)
 		rotations = Vector3(0, 0, direction_sign * (distance / 2.0) * (PI / 2.0))
 	else:
-		# Bewegung in Z-Richtung → Rolle um X
-		var direction_sign = -sign(dir.z) # Minus für visuell korrekt
+		var direction_sign = sign(dir.z)
 		rotations = Vector3(direction_sign * (distance / 2.0) * (PI / 2.0), 0, 0)
+
+	# --- Snap auf Vielfache von 90° ---
+	var snap_angle = PI / 2.0  # 90° in Radiant
+	rotations.x = round(rotations.x / snap_angle) * snap_angle
+	rotations.y = round(rotations.y / snap_angle) * snap_angle
+	rotations.z = round(rotations.z / snap_angle) * snap_angle
 
 	# Tween erstellen
 	var tween = create_tween()
