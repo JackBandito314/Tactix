@@ -1,7 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://cr0qx4t7aqwhy"]
+[gd_scene load_steps=4 format=3 uid="uid://cr0qx4t7aqwhy"]
 
 [ext_resource type="PackedScene" uid="uid://vagvxjo4t3vm" path="res://assets/dice_w.glb" id="1_1vq7m"]
+[ext_resource type="Script" uid="uid://ckn8ur0keedia" path="res://scripts/dice.gd" id="2_hx6fm"]
 
-[node name="White Dice" type="Node3D"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_1vq7m"]
+
+[node name="White Dice" type="Area3D" groups=["dice"]]
+script = ExtResource("2_hx6fm")
 
 [node name="dice_w" parent="." instance=ExtResource("1_1vq7m")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+shape = SubResource("BoxShape3D_1vq7m")

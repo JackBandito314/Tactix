@@ -1,7 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://d26jdyhcvd28v"]
+[gd_scene load_steps=4 format=3 uid="uid://d26jdyhcvd28v"]
 
+[ext_resource type="Script" uid="uid://ckn8ur0keedia" path="res://scripts/dice.gd" id="1_3bsmb"]
 [ext_resource type="PackedScene" uid="uid://dwbqvfs1grksd" path="res://assets/king_b.glb" id="1_vshst"]
 
-[node name="Black King" type="Node3D"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_vshst"]
+
+[node name="Black King" type="Area3D" groups=["dice"]]
+script = ExtResource("1_3bsmb")
 
 [node name="king_b" parent="." instance=ExtResource("1_vshst")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+shape = SubResource("BoxShape3D_vshst")
