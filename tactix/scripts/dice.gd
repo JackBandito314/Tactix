@@ -69,31 +69,76 @@ func _animate_transparency(target_alpha: float):
 
 
 func move_to_position(target_pos: Vector3):
-	var distance = global_position.distance_to(target_pos)
-	if distance < 0.01:
+	var cube_size := 2.0
+	var half_size := cube_size / 2.0
+	var step_time := 0.25 # Zeit pro Feld
+
+	# 1️⃣ Ziel auf Grid runden
+	target_pos.x = round(target_pos.x / cube_size) * cube_size
+	target_pos.z = round(target_pos.z / cube_size) * cube_size
+
+	# 2️⃣ Bewegungsdifferenz
+	var diff = target_pos - global_position
+
+	# Nur geradeaus erlauben
+	if abs(diff.x) > 0.01 and abs(diff.z) > 0.01:
+		push_error("Nur gerade Bewegungen erlaubt!")
 		return
 
-	var speed = 3.0
-	var move_time = distance / speed
+	# 3️⃣ Anzahl Felder bestimmen
+	var steps := int(round(diff.length() / cube_size))
+	if steps <= 0:
+		return
 
-	var dir = (target_pos - global_position).normalized()
+	# 4️⃣ Richtung bestimmen
+	var dir = diff.normalized()
 
-	# Achse bestimmen (deine aktuelle Logik hier)
-	var rotations = Vector3.ZERO
+	# 5️⃣ Achse & Pivot-Offset bestimmen
+	var axis: Vector3
+	var edge_offset: Vector3
+
 	if abs(dir.x) > abs(dir.z):
-		var direction_sign = -sign(dir.x)
-		rotations = Vector3(0, 0, direction_sign * (distance / 2.0) * (PI / 2.0))
+		# Bewegung in X-Richtung → Drehung um Z-Achse
+		axis = Vector3(0, 0, -sign(dir.x))
+		edge_offset = Vector3(sign(dir.x) * half_size, -half_size, 0)
 	else:
-		var direction_sign = sign(dir.z)
-		rotations = Vector3(direction_sign * (distance / 2.0) * (PI / 2.0), 0, 0)
+		# Bewegung in Z-Richtung → Drehung um X-Achse
+		axis = Vector3(sign(dir.z), 0, 0)
+		edge_offset = Vector3(0, -half_size, sign(dir.z) * half_size)
 
-	# --- Snap auf Vielfache von 90° ---
-	var snap_angle = PI / 2.0  # 90° in Radiant
-	rotations.x = round(rotations.x / snap_angle) * snap_angle
-	rotations.y = round(rotations.y / snap_angle) * snap_angle
-	rotations.z = round(rotations.z / snap_angle) * snap_angle
+	# 6️⃣ Tween-Sequenz erstellen
+	var sequence = create_tween()
+	var start_transform: Transform3D = global_transform
 
-	# Tween erstellen
-	var tween = create_tween()
-	tween.tween_property(self, "global_position", target_pos, move_time)
-	tween.parallel().tween_property(self, "rotation", rotation + rotations, move_time)
+	for i in range(steps):
+		sequence.tween_method(
+			func(v):
+				var current_angle = (PI / 2.0) * v
+				var temp_transform: Transform3D = start_transform
+
+				# 1. Zum Pivot verschieben
+				temp_transform.origin += edge_offset
+				# 2. Rotieren
+				temp_transform.basis = Basis(axis, current_angle) * start_transform.basis
+				# 3. Zurück verschieben
+				temp_transform.origin -= edge_offset
+
+				# 4. Höhe fixieren – Mittelpunkt immer bei Y=1
+				temp_transform.origin.y = 1.0
+
+				# Transform anwenden
+				global_transform = temp_transform, 0.0, 1.0, step_time
+		)
+
+		sequence.tween_callback(func():
+			# Nach jedem Schritt Position & Starttransform aktualisieren
+			global_position += dir * cube_size
+			global_position.y = 1.0 # Sicherheit
+			start_transform = global_transform
+		)
+
+	# Am Ende sicherstellen, dass er genau am Ziel steht
+	sequence.tween_callback(func():
+		global_position = target_pos
+		global_position.y = 1.0
+	)
