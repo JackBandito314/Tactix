@@ -65,3 +65,34 @@ func _animate_transparency(target_alpha: float):
 		target_alpha,
 		0.25
 	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+
+
+func move_to_position(target_pos: Vector3):
+	# Distanz in Weltkoordinaten
+	var distance = global_position.distance_to(target_pos)
+	if distance < 0.01:
+		return # Kein Bewegen nötig
+
+	# Geschwindigkeit in Einheiten/Sekunde
+	var speed = 3.0
+	var move_time = distance / speed
+
+	# Bewegungsrichtung bestimmen
+	var dir = (target_pos - global_position).normalized()
+
+	# Achse bestimmen:
+	var rotations = Vector3.ZERO
+	if abs(dir.x) > abs(dir.z):
+		# Bewegung in X-Richtung → Rolle um Z
+		var direction_sign = sign(dir.x)
+		rotations = Vector3(0, 0, direction_sign * (distance / 2.0) * (PI / 2.0))
+	else:
+		# Bewegung in Z-Richtung → Rolle um X
+		var direction_sign = -sign(dir.z) # Minus für visuell korrekt
+		rotations = Vector3(direction_sign * (distance / 2.0) * (PI / 2.0), 0, 0)
+
+	# Tween erstellen
+	var tween = create_tween()
+	tween.tween_property(self, "global_position", target_pos, move_time)
+	tween.parallel().tween_property(self, "rotation", rotation + rotations, move_time)
