@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://ckhyo75q7x3ar"]
+[gd_scene load_steps=9 format=3 uid="uid://ckhyo75q7x3ar"]
 
 [ext_resource type="Script" uid="uid://dmh23qil0b726" path="res://scripts/game.gd" id="1_p57ef"]
 [ext_resource type="PackedScene" uid="uid://6hejr37hqim0" path="res://assets/board.glb" id="1_uwrxv"]
 [ext_resource type="PackedScene" uid="uid://cr0qx4t7aqwhy" path="res://scenes/white_dice.tscn" id="2_yqjtg"]
 [ext_resource type="PackedScene" uid="uid://wydgbdgw11iq" path="res://scenes/white_king.tscn" id="3_lnu2h"]
+[ext_resource type="Script" uid="uid://cqruuiae3yxuc" path="res://scripts/orbit_camera.gd" id="3_u5sy4"]
 [ext_resource type="PackedScene" uid="uid://dr6ephfjv1xvi" path="res://scenes/black_dice.tscn" id="4_lbhrr"]
 [ext_resource type="PackedScene" uid="uid://d26jdyhcvd28v" path="res://scenes/black_king.tscn" id="5_iywne"]
 
@@ -21,8 +22,10 @@ collision_layer = 2
 transform = Transform3D(18, 0, 0, 0, 18, 0, 0, 0, 18, 0, -8.89, 0)
 shape = SubResource("BoxShape3D_p57ef")
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="Camera3D" type="Camera3D" parent="." node_paths=PackedStringArray("target")]
 transform = Transform3D(-0.943107, 0.199736, -0.265811, -5.25172e-08, 0.799454, 0.600727, 0.33249, 0.56655, -0.75397, -4.87952, 10.25, -14.4849)
+script = ExtResource("3_u5sy4")
+target = NodePath("../StaticBody3D/board")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 17, 0)
