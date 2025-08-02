@@ -3,24 +3,24 @@
 [ext_resource type="PackedScene" uid="uid://rvkmpt8ufw6s" path="res://assets/king_w.glb" id="1_3lo5n"]
 [ext_resource type="Script" uid="uid://ckn8ur0keedia" path="res://scripts/dice.gd" id="1_v1xtg"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_ttmlp"]
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v1xtg"]
 resource_name = "Dice white"
 transparency = 1
 albedo_color = Color(0.60811, 0.453149, 0.175344, 1)
 roughness = 0.975806
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_ttmlp"]
+
 [node name="White King" type="Area3D" groups=["dice"]]
 script = ExtResource("1_v1xtg")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
-shape = SubResource("BoxShape3D_ttmlp")
 
 [node name="king_w" parent="." instance=ExtResource("1_3lo5n")]
 
 [node name="King_001" parent="king_w" index="0"]
 surface_material_override/0 = SubResource("StandardMaterial3D_v1xtg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+shape = SubResource("BoxShape3D_ttmlp")
 
 [editable path="king_w"]
