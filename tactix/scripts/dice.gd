@@ -123,21 +123,24 @@ func move_to_position(target_pos: Vector3):
 				# 3. Zurück verschieben
 				temp_transform.origin -= edge_offset
 
-				# 4. Höhe fixieren – Mittelpunkt immer bei Y=1
+				# 💡 Translation während der Drehung mit einberechnen
+				temp_transform.origin += dir * cube_size * v
+
+				# Höhe fixieren
 				temp_transform.origin.y = 1.0
 
-				# Transform anwenden
+				# Setzen
 				global_transform = temp_transform, 0.0, 1.0, step_time
 		)
 
+		# Nach jedem Schritt Start-Transform updaten
 		sequence.tween_callback(func():
-			# Nach jedem Schritt Position & Starttransform aktualisieren
 			global_position += dir * cube_size
-			global_position.y = 1.0 # Sicherheit
+			global_position.y = 1.0
 			start_transform = global_transform
 		)
 
-	# Am Ende sicherstellen, dass er genau am Ziel steht
+	# Am Ende sauber auf Ziel setzen
 	sequence.tween_callback(func():
 		global_position = target_pos
 		global_position.y = 1.0
