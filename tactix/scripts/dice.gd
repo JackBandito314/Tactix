@@ -70,8 +70,11 @@ func _animate_transparency(target_alpha: float):
 
 func move_to_position(target_pos: Vector3):
 	var cube_size := 2.0
-	var half_size := cube_size / 2.0
-	var step_time := 0.25 # Zeit pro Feld
+#	var half_size := cube_size / 2.0
+	var step_time := 0.5 # Langsam zum Beobachten
+
+	# 🔹 Höhe nur EINMAL zu Beginn fixieren
+	target_pos.y = 1.0
 
 	# 1️⃣ Ziel auf Grid runden
 	target_pos.x = round(target_pos.x / cube_size) * cube_size
@@ -93,24 +96,31 @@ func move_to_position(target_pos: Vector3):
 	# 4️⃣ Richtung bestimmen
 	var dir = diff.normalized()
 
-	# 5️⃣ Achse & Pivot-Offset bestimmen
-	var axis: Vector3
-	var edge_offset: Vector3
+	# 5️⃣ Achse & Pivot-Offset bestimmen (lokaler Raum)
+#	var axis: Vector3
+#	var edge_offset: Vector3
+#	var down : Vector3
+#	down = Vector3(0,-1,0)
+#	axis = dir.cross(down)
+#	edge_offset = dir + down
+	
+	var down := Vector3(0,-1,0)
+	var axis := Vector3(dir.cross(down))
+	var edge_offset := Vector3(dir + down)
 
-	if abs(dir.x) > abs(dir.z):
-		# Bewegung in X-Richtung → Drehung um Z-Achse
-		axis = Vector3(0, 0, -sign(dir.x))
-		edge_offset = Vector3(sign(dir.x) * half_size, -half_size, 0)
-	else:
-		# Bewegung in Z-Richtung → Drehung um X-Achse
-		axis = Vector3(sign(dir.z), 0, 0)
-		edge_offset = Vector3(0, -half_size, sign(dir.z) * half_size)
+#	if abs(dir.x) > abs(dir.z):
+#		# Bewegung in X-Richtung → Drehung um Z-Achse
+#		axis = Vector3(0, 0, -sign(dir.x))
+#		edge_offset = Vector3(sign(dir.x) * half_size, -half_size, 0)
+#	else:
+#		# Bewegung in Z-Richtung → Drehung um X-Achse
+#		axis = Vector3(sign(dir.z), 0, 0)
+#		edge_offset = Vector3(0, -half_size, sign(dir.z) * half_size)
 
 	# 6️⃣ Tween-Sequenz erstellen
 	var sequence = create_tween()
 
 	for i in range(steps):
-		# ⬅️ aktueller Stand vor diesem Schritt
 		var this_start_transform: Transform3D = global_transform
 
 		sequence.tween_method(
@@ -118,33 +128,29 @@ func move_to_position(target_pos: Vector3):
 				var current_angle = (PI / 2.0) * v
 				var temp_transform: Transform3D = this_start_transform
 
+				# Pivot-Offset im lokalen Raum berechnen
+#				var local_offset = this_start_transform.basis * edge_offset
+				var local_offset = global_position + edge_offset
+
 				# 1. Zum Pivot verschieben
-				temp_transform.origin += edge_offset
+				temp_transform.origin += local_offset
 				# 2. Rotieren
 				temp_transform.basis = Basis(axis, current_angle) * this_start_transform.basis
 				# 3. Zurück verschieben
-				temp_transform.origin -= edge_offset
+				temp_transform.origin -= local_offset
 
-				# Translation parallel zur Drehung
-				temp_transform.origin += dir * cube_size * v
-
-				# Höhe fixieren
-				temp_transform.origin.y = 1.0
-
-				# Setzen
+				# Transform anwenden
 				global_transform = temp_transform
 				,
-			0.0, 1.0, step_time
+				0.0, 1.0, step_time
 		)
 
-		# Am Ende des Schritts Position & Rotation fixieren
+		# Am Ende des Schritts Position setzen (ohne künstliche Höhenkorrektur)
 		sequence.tween_callback(func():
 			global_position += dir * cube_size
-			global_position.y = 1.0
 		)
 
-	# Am Ende des gesamten Bewegungszugs sicherstellen, dass er genau am Ziel steht
+	# Am Ende sicherstellen, dass er exakt auf dem Ziel-Feld steht
 	sequence.tween_callback(func():
 		global_position = target_pos
-		global_position.y = 1.0
 	)
