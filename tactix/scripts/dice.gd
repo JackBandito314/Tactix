@@ -108,39 +108,42 @@ func move_to_position(target_pos: Vector3):
 
 	# 6️⃣ Tween-Sequenz erstellen
 	var sequence = create_tween()
-	var start_transform: Transform3D = global_transform
 
 	for i in range(steps):
+		# ⬅️ aktueller Stand vor diesem Schritt
+		var this_start_transform: Transform3D = global_transform
+
 		sequence.tween_method(
 			func(v):
 				var current_angle = (PI / 2.0) * v
-				var temp_transform: Transform3D = start_transform
+				var temp_transform: Transform3D = this_start_transform
 
 				# 1. Zum Pivot verschieben
 				temp_transform.origin += edge_offset
 				# 2. Rotieren
-				temp_transform.basis = Basis(axis, current_angle) * start_transform.basis
+				temp_transform.basis = Basis(axis, current_angle) * this_start_transform.basis
 				# 3. Zurück verschieben
 				temp_transform.origin -= edge_offset
 
-				# 💡 Translation während der Drehung mit einberechnen
+				# Translation parallel zur Drehung
 				temp_transform.origin += dir * cube_size * v
 
 				# Höhe fixieren
 				temp_transform.origin.y = 1.0
 
 				# Setzen
-				global_transform = temp_transform, 0.0, 1.0, step_time
+				global_transform = temp_transform
+				,
+			0.0, 1.0, step_time
 		)
 
-		# Nach jedem Schritt Start-Transform updaten
+		# Am Ende des Schritts Position & Rotation fixieren
 		sequence.tween_callback(func():
 			global_position += dir * cube_size
 			global_position.y = 1.0
-			start_transform = global_transform
 		)
 
-	# Am Ende sauber auf Ziel setzen
+	# Am Ende des gesamten Bewegungszugs sicherstellen, dass er genau am Ziel steht
 	sequence.tween_callback(func():
 		global_position = target_pos
 		global_position.y = 1.0
