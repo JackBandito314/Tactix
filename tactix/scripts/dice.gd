@@ -12,25 +12,25 @@ func _ready():
 		push_error("Kein MeshInstance3D im Würfel gefunden!")
 		return
 
-	# Eigenes Material erzeugen (damit es nur diesen Würfel betrifft)
+	# Eigenes Material erzeugen (wirklich nur für diesen Würfel)
 	var original_mat = mesh_node.get_surface_override_material(0)
 	if original_mat == null:
 		original_mat = mesh_node.mesh.surface_get_material(0)
 
 	if original_mat:
-		mat = original_mat.duplicate()
+		mat = original_mat.duplicate(true) # tiefes Duplizieren
 		mesh_node.set_surface_override_material(0, mat)
-		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+
+		# Standard: nur Rückseiten werden nicht gerendert
+		mat.cull_mode = BaseMaterial3D.CULL_BACK
+
 		base_color = mat.albedo_color
-		mat.albedo_color.a = 1.0
 	else:
 		push_error("Kein Material gefunden!")
 
 func _find_first_mesh(node: Node) -> MeshInstance3D:
-	# Falls dieser Node ein MeshInstance3D ist → zurückgeben
 	if node is MeshInstance3D:
 		return node
-	# Sonst alle Kinder durchsuchen
 	for child in node.get_children():
 		var found = _find_first_mesh(child)
 		if found != null:
@@ -42,7 +42,7 @@ func _input_event(camera, event, click_position, click_normal, shape_idx):
 		# Falls derselbe Würfel nochmal geklickt → abwählen
 		if is_selected:
 			is_selected = false
-			_animate_transparency(1.0)
+			_animate_transparency(false)
 			return
 		
 		# Alle anderen Würfel abwählen
@@ -50,22 +50,26 @@ func _input_event(camera, event, click_position, click_normal, shape_idx):
 			if d != self:
 				d.is_selected = false
 				if d.has_method("_animate_transparency"):
-					d._animate_transparency(1.0)
+					d._animate_transparency(false)
 		
 		# Diesen auswählen
 		is_selected = true
-		_animate_transparency(0.5)
+		_animate_transparency(true)
 
-func _animate_transparency(target_alpha: float):
+
+func _animate_transparency(selected: bool):
 	if mat == null:
 		return
-	var tween = create_tween()
-	tween.tween_property(
-		mat, "albedo_color:a",
-		target_alpha,
-		0.25
-	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	# Ausgewählt → Vorderseiten nicht rendern → Blick ins Innere
+	if selected:
+		mat.cull_mode = BaseMaterial3D.CULL_FRONT
+	else:
+		mat.cull_mode = BaseMaterial3D.CULL_BACK
 
+
+# ====================================================================
+# Würfelbewegung
+# ====================================================================
 
 func rotate_cube_around_edge(cube: Node3D, edge_offset: Vector3, axis: Vector3, angle: float, duration: float) -> void:
 	var old_parent: Node = cube.get_parent()
@@ -102,16 +106,20 @@ func rotate_cube_around_edge(cube: Node3D, edge_offset: Vector3, axis: Vector3, 
 	cube.global_transform = new_pos
 	pivot_node.queue_free()
 
-	# Sicherheits‑Snap (nach Rückgabe an Original-Parent!)
+	# Sicherheits‑Snap
 	var cube_size := 2.0
 	cube.global_position.x = round(cube.global_position.x / cube_size) * cube_size
 	cube.global_position.z = round(cube.global_position.z / cube_size) * cube_size
 	cube.global_position.y = 1.0
 
-
 func move_to_position(target_pos: Vector3):
+	# Würfel beim Start der Bewegung abwählen und wieder deckend machen
+	if is_selected:
+		is_selected = false
+		_animate_transparency(false)
+
 	var cube_size := 2.0
-	var step_time := .5 # Zeit pro Feld (Testwert)
+	var step_time := .5 # Zeit pro Feld
 
 	# Ziel auf Grid runden
 	target_pos.x = round(target_pos.x / cube_size) * cube_size
@@ -136,7 +144,7 @@ func move_to_position(target_pos: Vector3):
 
 	# Achse & Pivot-Offset bestimmen
 	var down := Vector3(0, -1, 0)
-	var axis := dir.cross(down) # senkrecht auf Bewegung und unten
+	var axis := dir.cross(down)
 	var edge_offset := Vector3(dir + down)
 
 	# Seriell pro Feld bewegen
