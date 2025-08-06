@@ -2,7 +2,6 @@ extends Node3D
 
 var selected_dice: Area3D = null
 
-
 func _unhandled_input(event):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var ray_origin = $Camera3D.project_ray_origin(event.position)
