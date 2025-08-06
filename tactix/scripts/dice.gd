@@ -39,22 +39,32 @@ func _find_first_mesh(node: Node) -> MeshInstance3D:
 
 func _input_event(camera, event, click_position, click_normal, shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		# Falls derselbe Würfel nochmal geklickt → abwählen
+
+		var game_node = get_tree().current_scene
+		if not game_node:
+			push_error("Konnte Game-Node nicht finden!")
+			return
+
+		# Falls dieser Würfel bereits ausgewählt ist → abwählen
 		if is_selected:
 			is_selected = false
 			_animate_transparency(false)
+			if "selected_dice" in game_node:
+				game_node.selected_dice = null
 			return
-		
+
 		# Alle anderen Würfel abwählen
 		for d in get_tree().get_nodes_in_group("dice"):
 			if d != self:
 				d.is_selected = false
 				if d.has_method("_animate_transparency"):
 					d._animate_transparency(false)
-		
-		# Diesen auswählen
+
+		# Diesen Würfel auswählen
 		is_selected = true
 		_animate_transparency(true)
+		if "selected_dice" in game_node:
+			game_node.selected_dice = self
 
 
 func _animate_transparency(selected: bool):
