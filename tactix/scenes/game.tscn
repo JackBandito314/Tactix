@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://d26jdyhcvd28v" path="res://scenes/black_king.tscn" id="5_iywne"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_p57ef"]
+size = Vector3(1, 0.001, 1)
 
 [node name="Game" type="Node3D"]
 script = ExtResource("1_p57ef")
@@ -19,7 +20,7 @@ collision_layer = 2
 [node name="board" parent="StaticBody3D" instance=ExtResource("2_u5sy4")]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-transform = Transform3D(18, 0, 0, 0, 18, 0, 0, 0, 18, 0, -8.999, 0)
+transform = Transform3D(18, 0, 0, 0, 18, 0, 0, 0, 18, 0, -0.008, 0)
 shape = SubResource("BoxShape3D_p57ef")
 
 [node name="Camera3D" type="Camera3D" parent="." node_paths=PackedStringArray("target")]
@@ -87,3 +88,4 @@ transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, -6, 1,
 
 [node name="Black Dice8" parent="Black" instance=ExtResource("4_lbhrr")]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -8, 1, -8)
+rotation_edit_mode = 2

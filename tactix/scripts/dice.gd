@@ -67,20 +67,58 @@ func _animate_transparency(target_alpha: float):
 	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
+func rotate_cube_around_edge(cube: Node3D, edge_offset: Vector3, axis: Vector3, angle: float, duration: float) -> void:
+	var old_parent: Node = cube.get_parent()
+	var old_transform: Transform3D = cube.global_transform
+
+	# Pivot-Node erstellen
+	var pivot_node := Node3D.new()
+	get_tree().current_scene.add_child(pivot_node)
+
+	# Pivot an die richtige Kante setzen
+	pivot_node.global_transform.origin = old_transform.origin + edge_offset
+
+	# Würfel in Pivot hängen (ohne Weltposition zu verändern)
+	old_parent.remove_child(cube)
+	pivot_node.add_child(cube)
+	cube.global_transform = old_transform
+
+	# Rotation animieren
+	var tween = pivot_node.create_tween()
+	tween.tween_property(
+		pivot_node,
+		"rotation",
+		pivot_node.rotation + axis.normalized() * angle,
+		duration
+	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+	# Auf Animation warten
+	await tween.finished
+
+	# Würfel zurückhängen
+	var new_pos = cube.global_transform
+	pivot_node.remove_child(cube)
+	old_parent.add_child(cube)
+	cube.global_transform = new_pos #cube.global_transform #hier teleport
+	pivot_node.queue_free()
+
+	# Sicherheits‑Snap (nach Rückgabe an Original-Parent!)
+	var cube_size := 2.0
+	cube.global_position.x = round(cube.global_position.x / cube_size) * cube_size
+	cube.global_position.z = round(cube.global_position.z / cube_size) * cube_size
+	cube.global_position.y = 1.0
+
 
 func move_to_position(target_pos: Vector3):
 	var cube_size := 2.0
-#	var half_size := cube_size / 2.0
-	var step_time := 0.5 # Langsam zum Beobachten
+	var step_time := .5 # Zeit pro Feld (Testwert)
 
-	# 🔹 Höhe nur EINMAL zu Beginn fixieren
-	target_pos.y = 1.0
-
-	# 1️⃣ Ziel auf Grid runden
+	# Ziel auf Grid runden
 	target_pos.x = round(target_pos.x / cube_size) * cube_size
 	target_pos.z = round(target_pos.z / cube_size) * cube_size
+	target_pos.y = 1.0
 
-	# 2️⃣ Bewegungsdifferenz
+	# Bewegungsdifferenz
 	var diff = target_pos - global_position
 
 	# Nur geradeaus erlauben
@@ -88,69 +126,19 @@ func move_to_position(target_pos: Vector3):
 		push_error("Nur gerade Bewegungen erlaubt!")
 		return
 
-	# 3️⃣ Anzahl Felder bestimmen
+	# Anzahl Felder bestimmen
 	var steps := int(round(diff.length() / cube_size))
 	if steps <= 0:
 		return
 
-	# 4️⃣ Richtung bestimmen
+	# Richtung bestimmen
 	var dir = diff.normalized()
 
-	# 5️⃣ Achse & Pivot-Offset bestimmen (lokaler Raum)
-#	var axis: Vector3
-#	var edge_offset: Vector3
-#	var down : Vector3
-#	down = Vector3(0,-1,0)
-#	axis = dir.cross(down)
-#	edge_offset = dir + down
-	
-	var down := Vector3(0,-1,0)
-	var axis := Vector3(dir.cross(down))
+	# Achse & Pivot-Offset bestimmen
+	var down := Vector3(0, -1, 0)
+	var axis := dir.cross(down) # senkrecht auf Bewegung und unten
 	var edge_offset := Vector3(dir + down)
 
-#	if abs(dir.x) > abs(dir.z):
-#		# Bewegung in X-Richtung → Drehung um Z-Achse
-#		axis = Vector3(0, 0, -sign(dir.x))
-#		edge_offset = Vector3(sign(dir.x) * half_size, -half_size, 0)
-#	else:
-#		# Bewegung in Z-Richtung → Drehung um X-Achse
-#		axis = Vector3(sign(dir.z), 0, 0)
-#		edge_offset = Vector3(0, -half_size, sign(dir.z) * half_size)
-
-	# 6️⃣ Tween-Sequenz erstellen
-	var sequence = create_tween()
-
+	# Seriell pro Feld bewegen
 	for i in range(steps):
-		var this_start_transform: Transform3D = global_transform
-
-		sequence.tween_method(
-			func(v):
-				var current_angle = (PI / 2.0) * v
-				var temp_transform: Transform3D = this_start_transform
-
-				# Pivot-Offset im lokalen Raum berechnen
-#				var local_offset = this_start_transform.basis * edge_offset
-				var local_offset = global_position + edge_offset
-
-				# 1. Zum Pivot verschieben
-				temp_transform.origin += local_offset
-				# 2. Rotieren
-				temp_transform.basis = Basis(axis, current_angle) * this_start_transform.basis
-				# 3. Zurück verschieben
-				temp_transform.origin -= local_offset
-
-				# Transform anwenden
-				global_transform = temp_transform
-				,
-				0.0, 1.0, step_time
-		)
-
-		# Am Ende des Schritts Position setzen (ohne künstliche Höhenkorrektur)
-		sequence.tween_callback(func():
-			global_position += dir * cube_size
-		)
-
-	# Am Ende sicherstellen, dass er exakt auf dem Ziel-Feld steht
-	sequence.tween_callback(func():
-		global_position = target_pos
-	)
+		await rotate_cube_around_edge(self, edge_offset, axis, PI / 2.0, step_time)
