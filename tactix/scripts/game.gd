@@ -60,3 +60,4 @@ func _unhandled_input(event):
 				selected_dice.move_to_position(board_hit.position)
 			else:
 				print("❌ Brett nicht getroffen")
+				
