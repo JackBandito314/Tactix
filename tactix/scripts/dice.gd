@@ -99,7 +99,7 @@ func rotate_cube_around_edge(cube: Node3D, edge_offset: Vector3, axis: Vector3, 
 	var new_pos = cube.global_transform
 	pivot_node.remove_child(cube)
 	old_parent.add_child(cube)
-	cube.global_transform = new_pos #cube.global_transform #hier teleport
+	cube.global_transform = new_pos
 	pivot_node.queue_free()
 
 	# Sicherheits‑Snap (nach Rückgabe an Original-Parent!)
